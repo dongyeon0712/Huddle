@@ -62,6 +62,7 @@ h2{font-size:20px;font-weight:600;letter-spacing:.2px}
 .btn:active{background:var(--cta-press);transform:scale(.98)}
 .btn.yellow,.btn.mint{background:var(--cta)}
 .btn.yellow:active,.btn.mint:active{background:var(--cta-press)}
+.btn:disabled{background:#E5E5EA;color:#8E8E93;box-shadow:none;cursor:not-allowed;transform:none}
 .btn.ghost{background:var(--card);color:var(--ink);box-shadow:0 0 0 1px var(--sep) inset}
 .btn.sm{width:auto;padding:8px 16px;font-size:15px;border-radius:99px}
 .link{color:var(--accent);display:block;text-align:center;width:100%;padding:12px;font-size:16px;text-decoration:none}
@@ -496,20 +497,22 @@ const STEPS=[
   <div class="opts" style="margin-top:20px">${['Weekday mornings','Weeknights','Fri night','Sat daytime','Sunday'].map(t=>`<button class="chip ${sel.times.has(t)?'on':''}" style="font-size:16px;padding:12px 18px" data-t="${t}">${t}</button>`).join('')}</div>`,
  ()=>`<h1>The Play Fair Promise</h1><p class="muted" style="margin-top:6px">Huddle works because people show up for each other.</p>
   <ul class="promise"><li>Show up on time — or cancel early so someone else gets your spot</li><li>Play for fun. Welcome beginners, never trash-talk</li><li>Respect hosts, rules and the space</li></ul>
-  <button class="row" id="promiseRow" style="border:0"><span class="toggle ${sel.promise?'on':''}"></span>I promise to play fair</button>`
+  <button class="row" id="promiseRow" style="border:0"><span class="toggle ${sel.promise?'on':''}"></span>I promise to play fair</button>
+  ${sel.promise?'':'<p class="small muted" style="margin-top:4px">Turn this on to continue.</p>'}`
 ];
 function renderSetup(){
   $('#setupBody').innerHTML=STEPS[step]();
   $$('#prog i').forEach((i,k)=>i.classList.toggle('on',k<=step));
   $('#stepLbl').textContent=`Step ${step+1} of 4`;
   $('#setupNext').textContent=step===3?'Join Huddle':'Next';
+  $('#setupNext').disabled=(step===3&&!sel.promise);
   $$('#setupBody [data-s]').forEach(b=>b.onclick=()=>{const e=b.dataset.s;sel.sports.has(e)?sel.sports.delete(e):sel.sports.add(e);renderSetup()});
   $$('#setupBody [data-l]').forEach(b=>b.onclick=()=>{sel.level=b.dataset.l;renderSetup()});
   $$('#setupBody [data-v]').forEach(b=>b.onclick=()=>{sel.vibe=b.dataset.v;renderSetup()});
   $$('#setupBody [data-t]').forEach(b=>b.onclick=()=>{const t=b.dataset.t;sel.times.has(t)?sel.times.delete(t):sel.times.add(t);renderSetup()});
   const pr=$('#promiseRow'); if(pr)pr.onclick=()=>{sel.promise=!sel.promise;renderSetup()};
 }
-$('#setupNext').onclick=()=>{ if(step<3){step++;renderSetup()} else go('home') };
+$('#setupNext').onclick=()=>{ if(step<3){step++;renderSetup()} else if(sel.promise) go('home'); else toast('Turn on the promise to continue') };
 
 /* ---------- home ---------- */
 const gameCard=g=>`
