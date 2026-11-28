@@ -624,7 +624,7 @@ function hideLoc(){closeSheet()}
 $('#lnNo').onclick=hideLoc;
 $('#lnYes').onclick=()=>{hideLoc();checkIn()};
 function checkIn(){
-  if(!state.team) state.team=Math.random()<.5?'blue':'green';
+  state.team='blue';
   state.checkedIn=true; state.joined.add(1); renderToday(); renderGameday();
   const t=state.team,T=TEAM[t];
   openSheet(`<div class="eyebrow" style="text-align:center">Checked in · Sunset Pickup Hoops</div>
